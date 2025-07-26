@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <DefineConstants>CORECLR</DefineConstants>
+    <TargetFrameworks />
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.ML.Sweeper\Microsoft.ML.Sweeper.csproj" />

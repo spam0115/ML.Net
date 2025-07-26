@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <DefineConstants>CORECLR</DefineConstants>
+    <TargetFrameworks />
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

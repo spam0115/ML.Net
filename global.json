@@ -1,20 +1,18 @@
 {
   "tools": {
-    "dotnet": "10.0.100-preview.3.25201.16",
+    "original_dotnet" : "10.0.100-preview.3.25201.16",
+    "dotnet": "9.0.302",
     "runtimes": {
       "dotnet": [
-        "$(DotNetRuntime60Version)",
-        "$(DotNetRuntime80Version)"
-      ],
-      "dotnet/x86": [
-        "$(DotNetRuntime60Version)",
-        "$(DotNetRuntime80Version)"
+        "$(DotNetRuntime90Version)"
       ]
     }
   },
   "msbuild-sdks": {
-    "Microsoft.DotNet.Arcade.Sdk": "10.0.0-beta.25268.1",
-    "Microsoft.DotNet.Helix.Sdk": "10.0.0-beta.25268.1",
+    "original_Microsoft.DotNet.Arcade.Sdk": "10.0.0-beta.25268.1",
+    "original_Microsoft.DotNet.Helix.Sdk": "10.0.0-beta.25268.1",
+    "Microsoft.DotNet.Arcade.Sdk": "9.0.0-beta.25366.1",
+    "Microsoft.DotNet.Helix.Sdk": "9.0.0-beta.25366.1",
     "Microsoft.Build.NoTargets": "3.7.0",
     "Microsoft.Build.Traversal": "3.2.0"
   }

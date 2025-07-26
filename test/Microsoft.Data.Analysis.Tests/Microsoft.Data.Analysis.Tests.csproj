@@ -4,6 +4,8 @@
         <NoWarn>$(NoWarn);MSML_ParameterLocalVarName;MSML_PrivateFieldName;MSML_ExtendBaseTestClass;MSML_GeneralName</NoWarn>
         <LangVersion>preview</LangVersion>
         <DefineConstants>$(DefineConstants);SKIP_MKL</DefineConstants>
+        <TargetFrameworks></TargetFrameworks>
+        <TargetFramework>net9.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

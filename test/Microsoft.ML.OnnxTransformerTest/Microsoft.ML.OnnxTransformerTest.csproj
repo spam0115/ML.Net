@@ -3,6 +3,8 @@
   <PropertyGroup>
     <IsUnitTestProject>true</IsUnitTestProject>
     <IsTestProject>true</IsTestProject>
+    <TargetFrameworks />
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

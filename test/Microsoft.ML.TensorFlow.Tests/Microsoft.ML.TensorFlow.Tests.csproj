@@ -3,6 +3,7 @@
   <PropertyGroup>
     <AssemblyName>Microsoft.ML.TensorFlow.Tests</AssemblyName>
     <StrongNameKeyId>Test</StrongNameKeyId>
+    <TargetFrameworks>net9.0</TargetFrameworks>
 
   </PropertyGroup>
 

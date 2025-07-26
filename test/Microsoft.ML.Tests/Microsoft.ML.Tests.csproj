@@ -4,6 +4,9 @@
     <AssemblyName>Microsoft.ML.Tests</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <StrongNameKeyId>Test</StrongNameKeyId>
+    <TargetFrameworks />
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     
   </PropertyGroup>
 

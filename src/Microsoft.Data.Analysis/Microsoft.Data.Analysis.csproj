@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net9.0</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SuppressFinalPackageVersion>false</SuppressFinalPackageVersion>
     <IsPackable>true</IsPackable>
@@ -33,11 +33,6 @@
   </Target>
 
   <ItemGroup>
-    <None Include="Converters.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Converters.tt</DependentUpon>
-    </None>
     <None Include="PrimitiveDataFrameColumn.BinaryOperators.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -45,7 +40,7 @@
     </None>
   </ItemGroup>
   
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="System.Numerics.Tensors" />
   </ItemGroup>
 

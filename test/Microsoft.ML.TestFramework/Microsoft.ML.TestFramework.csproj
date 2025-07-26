@@ -3,6 +3,7 @@
   <PropertyGroup>
     <IsUnitTestProject>true</IsUnitTestProject>
     <IsTestProject>true</IsTestProject>
+    <TargetFrameworks>net9.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.ML.Core\Microsoft.ML.Core.csproj" />

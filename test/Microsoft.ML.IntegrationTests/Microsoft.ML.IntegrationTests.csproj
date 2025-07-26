@@ -9,6 +9,9 @@
 
     <IsUnitTestProject>false</IsUnitTestProject>
     <IsIntegrationTestProject>true</IsIntegrationTestProject>
+    <TargetFrameworks />
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

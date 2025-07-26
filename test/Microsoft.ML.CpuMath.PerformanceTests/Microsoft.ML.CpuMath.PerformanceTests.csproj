@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks></TargetFrameworks>
     <!--
     work around https://github.com/dotnet/sdk/issues/3044
     The netfx configuration will set the RuntimeIdentifier, but this causes restore issues on 3.0.
@@ -13,6 +13,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsUnitTestProject>false</IsUnitTestProject>
     <IsPerformanceTestProject>true</IsPerformanceTestProject>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,8 +31,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
-    <Compile Remove="AvxPerformanceTests.cs"/>
-    <Compile Remove="SsePerformanceTests.cs"/>
+    <Compile Remove="AvxPerformanceTests.cs" />
+    <Compile Remove="SsePerformanceTests.cs" />
   </ItemGroup>
 
   <ItemGroup>

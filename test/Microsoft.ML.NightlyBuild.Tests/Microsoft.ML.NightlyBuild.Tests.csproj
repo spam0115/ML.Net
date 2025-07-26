@@ -8,6 +8,9 @@
     <IsPackable>false</IsPackable>
     <!-- NU1605 is because the dependencies are automatically updated via a script at runtime -->
     <NoWarn>$(NoWarn);NU1605</NoWarn>
+    <TargetFrameworks />
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <Import Project="..\NightlyBuildDependency.props" />

@@ -4,6 +4,8 @@
     <OutputType>Exe</OutputType>
     <StartupObject>Microsoft.ML.NugetPackageVersionUpdater.Program</StartupObject>
     <RunWorkingDirectory>$(MSBuildProjectDirectory)</RunWorkingDirectory>
+    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks />
   </PropertyGroup>
 
 </Project>
