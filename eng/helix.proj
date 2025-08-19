@@ -165,7 +165,7 @@
         <TargetFrameworks>%(ProjectsWithTargetFramework.TargetFrameworks)</TargetFrameworks>
         <OutputPath>$(BUILD_SOURCESDIRECTORY)\artifacts\bin\%(ProjectsWithTargetFramework.Filename)\$(BuildConfig)\%(ProjectsWithTargetFramework.TargetFrameworks)\$(RunTestScript)</OutputPath>
       </RunCommand>
-      <RunCommand Condition="$(TestTargetFramework.EndsWith('net48')) And %(ProjectsWithTargetFramework.TargetFrameworks) != 'net8.0'"  Include="%(ProjectsWithTargetFramework.Filename)">
+      <RunCommand Condition="$(TestTargetFramework.EndsWith('net48')) And %(ProjectsWithTargetFramework.TargetFrameworks) != 'net9.0'"  Include="%(ProjectsWithTargetFramework.Filename)">
         <Command>$(HelixCorrelationPayloadPath)/xunit-runner/tools/net48/xunit.console.exe %(ProjectsWithTargetFramework.Filename).dll -notrait Category=SkipInCI -xml testResults.xml</Command>
               <!-- FileName is reserved so have to go with something else -->
         <Filen>%(ProjectsWithTargetFramework.Filename)</Filen>
