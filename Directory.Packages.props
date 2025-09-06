@@ -5,7 +5,6 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
-
   <!-- Package versions -->
   <ItemGroup>
     <!-- Product dependencies -->
@@ -39,6 +38,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageVersion Include="NuGet.Packaging.Core" Version="$(NuGetVersion)" />
     <PackageVersion Include="NuGet.Resolver" Version="$(NuGetVersion)" />
+    <PackageVersion Include="NumSharp.Lite" Version="0.1.12" />
     <PackageVersion Include="Parquet.Net" Version="$(ParquetDotNetVersion)" />
     <PackageVersion Include="Plotly.NET.CSharp" Version="$(PlotlyNETCSharpVersion)" />
     <PackageVersion Include="SciSharp.TensorFlow.Redist" Version="$(TensorFlowVersion)" />
@@ -70,10 +70,8 @@
     <PackageVersion Include="libtorch-cpu-linux-x64" Version="$(LibTorchVersion)" />
     <PackageVersion Include="libtorch-cpu-osx-x64" Version="$(LibTorchVersion)" />
     <PackageVersion Include="libtorch-cpu-win-x64" Version="$(LibTorchVersion)" />
-
     <!-- Use the version specified by the SDK when building F# projects -->
     <PackageVersion Include="FSharp.Core" Condition="'$(MSBuildProjectExtension)' == '.fsproj'" Version="$(FSCorePackageVersion)" />
-
     <!-- Test-only dependencies -->
     <PackageVersion Include="ApprovalTests" Version="$(ApprovalTestsVersion)" />
     <PackageVersion Include="AutoGen.Core" Version="$(AutoGenVersion)" />
@@ -101,7 +99,6 @@
     <PackageVersion Include="System.Data.SQLite" Version="$(SystemDataSQLiteCoreVersion)" />
     <PackageVersion Include="runtime.native.System.Data.SqlClient.sni" Version="$(RuntimeNativeSystemDataSqlClientSniVersion)" />
     <PackageVersion Include="Xunit.Combinatorial" Version="$(XunitCombinatorialVersion)" />
-
     <!-- Build/infrastructure dependencies -->
     <PackageVersion Include="Codecov" Version="$(CodecovVersion)" />
     <PackageVersion Include="Drop.App" Version="$(DropAppVersion)" />
@@ -111,7 +108,6 @@
     <PackageVersion Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="$(MicrosoftVisualStudioEngMicroBuildCoreVersion)" />
     <PackageVersion Include="Microsoft.VisualStudioEng.MicroBuild.Plugins.SwixBuild" Version="$(MicrosoftVisualStudioEngMicroBuildPluginsSwixBuildVersion)" />
     <PackageVersion Include="ReportGenerator" Version="$(ReportGeneratorVersion)" />
-
     <!-- Special cases - packages with specific versions not using properties -->
     <PackageVersion Include="MathNet.Numerics.Signed" Version="5.0.0" />
     <PackageVersion Include="TorchSharp-cuda-windows" Version="0.102.5" />

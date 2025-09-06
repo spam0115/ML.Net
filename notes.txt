@@ -1,12 +1,17 @@
+You need to install the Spectre mitigated libraries for this to work.  Install from VS installer.
 
 cd C:\Users\wongz4\s\mlnet2\
+
+cd C:\s\ML.Net\
+
+build.cmd -configuration Debug /p:TargetArchitecture=x64
+
 
 .\build.cmd -test -projects "C:\Users\wongz4\s\mlnet2\test\Microsoft.ML.Core.Tests\Microsoft.ML.Core.Tests.csproj"
 
 .\build.cmd -test -projects "C:\Users\wongz4\s\mlnet2\test\Microsoft.ML.AutoML.Tests\Microsoft.ML.AutoML.Tests.csproj"
 
 
-build.cmd -configuration Debug /p:TargetArchitecture=x64
 
 
 
