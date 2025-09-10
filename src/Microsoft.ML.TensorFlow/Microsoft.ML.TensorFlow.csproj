@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ArrayExtensions.cs" />
+    <Compile Remove="TensorFlowShapeToNumSharpShape.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.AccessControl" />
     <PackageReference Include="TensorFlow.NET" />
   </ItemGroup>

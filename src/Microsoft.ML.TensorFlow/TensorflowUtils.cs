@@ -12,9 +12,10 @@ using Microsoft.ML.Internal.Utilities;
 using Microsoft.ML.Runtime;
 using Microsoft.ML.TensorFlow;
 using Microsoft.ML.Transforms;
-using NumSharp;
+//using NumSharp;
 using Tensorflow;
 using static Tensorflow.Binding;
+using Shape = Tensorflow.Shape;
 using Utils = Microsoft.ML.Internal.Utilities.Utils;
 
 namespace Microsoft.ML.TensorFlow
@@ -77,7 +78,8 @@ namespace Microsoft.ML.TensorFlow
                 }
 
                 // Construct the final ML.NET type of a Tensorflow variable.
-                var tensorShape = op.output.TensorShape.dims;
+                //var tensorShape = op.output.TensorShape.dims;
+                var tensorShape = op.output.shape.as_int_list();
 
                 if (tensorShape == null)
                 {
@@ -441,8 +443,9 @@ namespace Microsoft.ML.TensorFlow
             }
         }
 
-        internal static Tensor CastDataAndReturnAsTensor<T>(T[] data, TensorShape tfShape)
+        internal static Tensor CastDataAndReturnAsTensor<T>(T[] data, Shape tfShape)
         {
+            /*
             var dims = tfShape.dims.Select(x => (long)x).ToArray();
 
             if (typeof(T) == typeof(sbyte))
@@ -476,9 +479,45 @@ namespace Microsoft.ML.TensorFlow
                 }
 
                 return new Tensor(strings);
+            }*/
+
+            if (typeof(T) == typeof(sbyte))
+            {
+                var c = (sbyte[])(object)data;
+                return new Tensor(c, tfShape);
+            }
+            else if (typeof(T) == typeof(long))
+                return new Tensor((long[])(object)data, tfShape);
+            else if (typeof(T) == typeof(Int32))
+                return new Tensor((Int32[])(object)data, tfShape);
+            else if (typeof(T) == typeof(Int16))
+                return new Tensor((Int16[])(object)data, tfShape);
+            else if (typeof(T) == typeof(byte))
+                return new Tensor((byte[])(object)data, tfShape, TF_DataType.TF_UINT8);
+            else if (typeof(T) == typeof(ulong))
+                return new Tensor((ulong[])(object)data, tfShape);
+            else if (typeof(T) == typeof(UInt32))
+                return new Tensor((UInt32[])(object)data, tfShape);
+            else if (typeof(T) == typeof(UInt16))
+                return new Tensor((UInt16[])(object)data, tfShape);
+            else if (typeof(T) == typeof(bool))
+                return new Tensor((bool[])(object)data, tfShape);
+            else if (typeof(T) == typeof(float))
+                return new Tensor((float[])(object)data, tfShape);
+            else if (typeof(T) == typeof(double))
+                return new Tensor((double[])(object)data, tfShape);
+            else if (typeof(T) == typeof(ReadOnlyMemory<char>))
+            {
+                string[] strings = new string[data.Length];
+                for (int i = 0; i < strings.Length; i++)
+                {
+                    strings[i] = data[i].ToString();
+                }
+
+                return new Tensor(strings);
             }
 
-            return new Tensor(new NDArray(data, tfShape));
+            return new Tensor(new Tensorflow.NumPy.NDArray(data, tfShape));
         }
 
         internal static Tensor CastDataAndReturnAsTensor<T>(T data)
@@ -486,7 +525,7 @@ namespace Microsoft.ML.TensorFlow
             if (typeof(T) == typeof(sbyte))
                 return new Tensor((sbyte)(object)data, TF_DataType.TF_INT8);
             else if (typeof(T) == typeof(long))
-                return new Tensor((long)(object)data, TF_DataType.TF_INT64);
+                return new Tensor((long)(object)data);
             else if (typeof(T) == typeof(Int32))
                 return new Tensor((Int32)(object)data, TF_DataType.TF_INT32);
             else if (typeof(T) == typeof(Int16))
@@ -494,17 +533,17 @@ namespace Microsoft.ML.TensorFlow
             else if (typeof(T) == typeof(byte))
                 return new Tensor((byte)(object)data, TF_DataType.TF_UINT8);
             else if (typeof(T) == typeof(ulong))
-                return new Tensor((ulong)(object)data, TF_DataType.TF_UINT64);
+                return new Tensor((ulong)(object)data);
             else if (typeof(T) == typeof(UInt32))
-                return new Tensor((UInt32)(object)data, TF_DataType.TF_UINT32);
+                return new Tensor((UInt32)(object)data);
             else if (typeof(T) == typeof(UInt16))
                 return new Tensor((UInt16)(object)data, TF_DataType.TF_UINT16);
             else if (typeof(T) == typeof(bool))
-                return new Tensor((bool)(object)data, TF_DataType.TF_BOOL);
+                return new Tensor((bool)(object)data);
             else if (typeof(T) == typeof(float))
-                return new Tensor((float)(object)data, TF_DataType.TF_FLOAT);
+                return new Tensor((float)(object)data);
             else if (typeof(T) == typeof(double))
-                return new Tensor((double)(object)data, TF_DataType.TF_DOUBLE);
+                return new Tensor((double)(object)data);
             else if (typeof(T) == typeof(ReadOnlyMemory<char>))
                 return new Tensor(data.ToString());
 
@@ -556,7 +595,8 @@ namespace Microsoft.ML.TensorFlow
             {
                 _inputTensors[index]?.Dispose();
                 _inputTensors[index] = value;
-                _inputValues[index] = value;
+                //_inputValues[index] = value;
+                _inputValues[index] = value.TensorDataPointer;
                 return this;
             }
 
@@ -613,7 +653,7 @@ namespace Microsoft.ML.TensorFlow
                 _status.Check(true);
 
                 for (int i = 0; i < _outputs.Length; i++)
-                    _outputTensors[i] = new Tensor(_outputValues[i]);
+                    _outputTensors[i] = new Tensor(_outputValues[i], _outputValues.GetShape(), TF_DataType.TF_INT32);
 
                 return _outputTensors;
             }

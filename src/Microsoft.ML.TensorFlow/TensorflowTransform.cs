@@ -16,11 +16,12 @@ using Microsoft.ML.Internal.Utilities;
 using Microsoft.ML.Runtime;
 using Microsoft.ML.TensorFlow;
 using Microsoft.ML.Transforms;
-using NumSharp;
+//using NumSharp;
 using Tensorflow;
 using static Microsoft.ML.TensorFlow.TensorFlowUtils;
 using static Tensorflow.Binding;
 using Utils = Microsoft.ML.Internal.Utilities.Utils;
+using Shape = Tensorflow.Shape;
 
 [assembly: LoadableClass(TensorFlowTransformer.Summary, typeof(IDataTransform), typeof(TensorFlowTransformer),
     typeof(TensorFlowEstimator.Options), typeof(SignatureDataTransform), TensorFlowTransformer.UserName, TensorFlowTransformer.ShortName)]
@@ -51,7 +52,7 @@ namespace Microsoft.ML.Transforms
         internal readonly DataViewType[] OutputTypes;
         internal readonly TF_DataType[] TFOutputTypes;
         internal readonly TF_DataType[] TFInputTypes;
-        internal readonly TensorShape[] TFInputShapes;
+        internal readonly Shape[] TFInputShapes;
         internal readonly (Operation, int)[] TFInputOperations;
         internal readonly (Operation, int)[] TFOutputOperations;
         internal TF_Output[] TFInputNodes;
@@ -212,14 +213,14 @@ namespace Microsoft.ML.Transforms
             env.CheckValue(options, nameof(options));
         }
 
-        private static ITensorValueGetter CreateTensorValueGetter<T>(DataViewRow input, bool isVector, int colIndex, TensorShape tfShape)
+        private static ITensorValueGetter CreateTensorValueGetter<T>(DataViewRow input, bool isVector, int colIndex, Shape tfShape)
         {
             if (isVector)
                 return new TensorValueGetterVec<T>(input, colIndex, tfShape);
             return new TensorValueGetter<T>(input, colIndex, tfShape);
         }
 
-        private static ITensorValueGetter CreateTensorValueGetter(DataViewRow input, TF_DataType tfType, bool isVector, int colIndex, TensorShape tfShape)
+        private static ITensorValueGetter CreateTensorValueGetter(DataViewRow input, TF_DataType tfType, bool isVector, int colIndex, Shape tfShape)
         {
             var type = Tf2MlNetType(tfType);
             return Utils.MarshalInvoke(CreateTensorValueGetter<int>, type.RawType, input, isVector, colIndex, tfShape);
@@ -230,7 +231,7 @@ namespace Microsoft.ML.Transforms
             int[] inputColIndices,
             bool[] isInputVector,
             TF_DataType[] tfInputTypes,
-            TensorShape[] tfInputShapes)
+            Shape[] tfInputShapes)
         {
             var srcTensorGetters = new ITensorValueGetter[inputColIndices.Length];
             for (int i = 0; i < inputColIndices.Length; i++)
@@ -331,10 +332,10 @@ namespace Microsoft.ML.Transforms
             return (session.graph.OperationByName(operation), 0);
         }
 
-        internal static (TF_DataType[] tfInputTypes, TensorShape[] tfInputShapes, (Operation, int)[]) GetInputInfo(IHost host, Session session, string[] inputs, int batchSize = 1)
+        internal static (TF_DataType[] tfInputTypes, Shape[] tfInputShapes, (Operation, int)[]) GetInputInfo(IHost host, Session session, string[] inputs, int batchSize = 1)
         {
             var tfInputTypes = new TF_DataType[inputs.Length];
-            var tfInputShapes = new TensorShape[inputs.Length];
+            var tfInputShapes = new Shape[inputs.Length];
             var tfInputOperations = new (Operation, int)[inputs.Length];
 
             int index = 0;
@@ -351,7 +352,7 @@ namespace Microsoft.ML.Transforms
                     throw host.ExceptParam(nameof(session), $"Input type '{tfInputType}' of input column '{input}' is not supported in TensorFlow");
 
                 tfInputTypes[index] = tfInputType;
-                tfInputShapes[index] = ((Tensor)inputTensor).TensorShape;
+                tfInputShapes[index] = ((Tensor)inputTensor).dims;
                 tfInputOperations[index] = (inputTensor, inputTensorIndex);
                 index++;
             }
@@ -359,7 +360,7 @@ namespace Microsoft.ML.Transforms
             return (tfInputTypes, tfInputShapes, tfInputOperations);
         }
 
-        internal static TensorShape GetTensorShape(TF_Output output, Graph graph, Status status = null)
+        internal static Shape GetTensorShape(TF_Output output, Graph graph, Status status = null)
         {
             if (graph == IntPtr.Zero)
                 throw new ObjectDisposedException(nameof(graph));
@@ -370,12 +371,12 @@ namespace Microsoft.ML.Transforms
             cstatus.Check();
 
             if (n == -1)
-                return new TensorShape(new int[0]);
+                return new Shape(new int[0]);
 
             var dims = new long[n];
             c_api.TF_GraphGetTensorShape(graph, output, dims, dims.Length, cstatus.Handle);
             cstatus.Check();
-            return new TensorShape(dims.Select(x => (int)x).ToArray());
+            return new Shape(dims.Select(x => (int)x).ToArray());
         }
 
         internal static (TF_DataType[] tfOutputTypes, DataViewType[] outputTypes, (Operation, int)[]) GetOutputInfo(IHost host, Session session, string[] outputs, bool treatOutputAsBatched)
@@ -402,7 +403,7 @@ namespace Microsoft.ML.Transforms
                 // i.e. the first dimension (if unknown) is assumed to be batch dimension.
                 // If there are other dimension that are unknown the transformer will return a variable length vector.
                 // This is the work around in absence of reshape transformer.
-                var idims = shape.dims;
+                var idims = shape.as_int_list();
 
                 int[] dims = idims;
                 if (treatOutputAsBatched)
@@ -517,7 +518,7 @@ namespace Microsoft.ML.Transforms
 
                 if (Session != null && Session != IntPtr.Zero)
                 {
-                    Session.close(); // invoked Dispose()
+                    Session.Dispose(); // invoked Dispose()
                 }
             }
             finally
@@ -536,7 +537,7 @@ namespace Microsoft.ML.Transforms
             private readonly TensorFlowTransformer _parent;
             private readonly int[] _inputColIndices;
             private readonly bool[] _isInputVector;
-            private readonly TensorShape[] _fullySpecifiedShapes;
+            private readonly Shape[] _fullySpecifiedShapes;
             private readonly ConcurrentBag<Runner> _runners;
 
             public Mapper(TensorFlowTransformer parent, DataViewSchema inputSchema) :
@@ -546,7 +547,7 @@ namespace Microsoft.ML.Transforms
                 _parent = parent;
                 _inputColIndices = new int[_parent.Inputs.Length];
                 _isInputVector = new bool[_parent.Inputs.Length];
-                _fullySpecifiedShapes = new TensorShape[_parent.Inputs.Length];
+                _fullySpecifiedShapes = new Shape[_parent.Inputs.Length];
                 for (int i = 0; i < _parent.Inputs.Length; i++)
                 {
                     if (!inputSchema.TryGetColumnIndex(_parent.Inputs[i], out _inputColIndices[i]))
@@ -570,11 +571,12 @@ namespace Microsoft.ML.Transforms
                         {
                             vecType = (VectorDataViewType)type;
                             var colTypeDims = vecType.Dimensions.Select(dim => (int)dim).ToArray();
-                            _fullySpecifiedShapes[i] = new TensorShape(colTypeDims);
+                            _fullySpecifiedShapes[i] = new Shape(colTypeDims);
                         }
                         else
                             // for primitive type use default TensorShape
-                            _fullySpecifiedShapes[i] = new TensorShape();
+                            //_fullySpecifiedShapes[i] = new TensorShape();
+                            _fullySpecifiedShapes[i] = new Shape(0);
                     }
                     else
                     {
@@ -587,7 +589,7 @@ namespace Microsoft.ML.Transforms
                         foreach (var s in shape)
                         {
                             if (s > 0)
-                                valCount *= s;
+                                valCount *= (int)s;
                             else
                                 numOfUnkDim++;
                         }
@@ -604,7 +606,7 @@ namespace Microsoft.ML.Transforms
                         {
                             originalShapeDims[1] = colTypeDims[0];
                             originalShapeDims[2] = colTypeDims[1];
-                            valCount *= originalShapeDims[1] * originalShapeDims[2];
+                            valCount *= (int)(originalShapeDims[1] * originalShapeDims[2]);
                             numOfUnkDim -= 2;
                         }
 
@@ -618,8 +620,8 @@ namespace Microsoft.ML.Transforms
                         // Fill in the unknown dimensions.
                         var l = new int[originalShapeNdim];
                         for (int ishape = 0; ishape < originalShapeNdim; ishape++)
-                            l[ishape] = originalShapeDims[ishape] == -1 ? (int)d : originalShapeDims[ishape];
-                        _fullySpecifiedShapes[i] = new TensorShape(l);
+                            l[ishape] = originalShapeDims[ishape] == -1 ? (int)d : (int)originalShapeDims[ishape];
+                        _fullySpecifiedShapes[i] = new Shape(l);
                     }
 
                     if (_parent._addBatchDimensionInput)
@@ -630,8 +632,8 @@ namespace Microsoft.ML.Transforms
                         var l = new int[originDim + 1];
                         l[0] = 1;
                         for (int ishape = 1; ishape < l.Length; ishape++)
-                            l[ishape] = _fullySpecifiedShapes[i].dims[ishape - 1];
-                        _fullySpecifiedShapes[i] = new TensorShape(l);
+                            l[ishape] = (int)(_fullySpecifiedShapes[i].dims[ishape - 1]);
+                        _fullySpecifiedShapes[i] = new Shape(l);
                     }
                 }
 
@@ -720,7 +722,7 @@ namespace Microsoft.ML.Transforms
                             UpdateCacheIfNeeded(input.Position, srcTensorGetters, activeOutputColNames, outputCache);
 
                             var tensor = outputCache.Outputs[_parent.Outputs[iinfo]];
-                            var tensorSize = tensor.TensorShape.dims.Where(x => x > 0).Aggregate((x, y) => x * y);
+                            var tensorSize = tensor.shape.dims.Where(x => x > 0).Aggregate((x, y) => x * y);
 
                             var editor = VBufferEditor.Create(ref dst, (int)tensorSize);
                             FetchStringData(tensor, editor.Values);
@@ -735,7 +737,7 @@ namespace Microsoft.ML.Transforms
                             UpdateCacheIfNeeded(input.Position, srcTensorGetters, activeOutputColNames, outputCache);
 
                             var tensor = outputCache.Outputs[_parent.Outputs[iinfo]];
-                            var tensorSize = tensor.TensorShape.dims.Where(x => x > 0).Aggregate((x, y) => x * y);
+                            var tensorSize = tensor.shape.dims.Where(x => x > 0).Aggregate((x, y) => x * y);
 
                             var editor = VBufferEditor.Create(ref dst, (int)tensorSize);
 
@@ -821,10 +823,10 @@ namespace Microsoft.ML.Transforms
         {
             private readonly ValueGetter<T> _srcgetter;
             private readonly T[] _bufferedData;
-            private readonly TensorShape _tfShape;
+            private readonly Shape _tfShape;
             private int _position;
 
-            public TensorValueGetter(DataViewRow input, int colIndex, TensorShape tfShape)
+            public TensorValueGetter(DataViewRow input, int colIndex, Shape tfShape)
             {
                 _srcgetter = input.GetGetter<T>(input.Schema[colIndex]);
                 _tfShape = tfShape;
@@ -855,7 +857,7 @@ namespace Microsoft.ML.Transforms
 
             public Tensor GetBufferedBatchTensor()
             {
-                var tensor = new Tensor(new NDArray(_bufferedData, _tfShape));
+                var tensor = new Tensor(new Tensorflow.NumPy.NDArray(_bufferedData, _tfShape));
                 _position = 0;
                 return tensor;
             }
@@ -864,7 +866,7 @@ namespace Microsoft.ML.Transforms
         private class TensorValueGetterVec<T> : ITensorValueGetter
         {
             private readonly ValueGetter<VBuffer<T>> _srcgetter;
-            private readonly TensorShape _tfShape;
+            private readonly Shape _tfShape;
             private VBuffer<T> _vBuffer;
             private T[] _denseData;
             private T[] _bufferedData;
@@ -872,7 +874,7 @@ namespace Microsoft.ML.Transforms
             private readonly long[] _dims;
             private readonly long _bufferedDataSize;
 
-            public TensorValueGetterVec(DataViewRow input, int colIndex, TensorShape tfShape)
+            public TensorValueGetterVec(DataViewRow input, int colIndex, Shape tfShape)
             {
                 _srcgetter = input.GetGetter<VBuffer<T>>(input.Schema[colIndex]);
                 _tfShape = tfShape;

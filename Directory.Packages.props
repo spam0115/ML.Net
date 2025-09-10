@@ -38,7 +38,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="$(NewtonsoftJsonVersion)" />
     <PackageVersion Include="NuGet.Packaging.Core" Version="$(NuGetVersion)" />
     <PackageVersion Include="NuGet.Resolver" Version="$(NuGetVersion)" />
-    <PackageVersion Include="NumSharp.Lite" Version="0.1.12" />
+    <!-- tried to add this but it seems to not really be needed <PackageVersion Include="NumSharp.Lite" Version="0.1.12" /> -->
     <PackageVersion Include="Parquet.Net" Version="$(ParquetDotNetVersion)" />
     <PackageVersion Include="Plotly.NET.CSharp" Version="$(PlotlyNETCSharpVersion)" />
     <PackageVersion Include="SciSharp.TensorFlow.Redist" Version="$(TensorFlowVersion)" />
