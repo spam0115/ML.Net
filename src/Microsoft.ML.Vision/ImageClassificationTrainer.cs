@@ -23,6 +23,7 @@ using Microsoft.ML.Trainers;
 using Microsoft.ML.Transforms;
 using Microsoft.ML.Vision;
 using Tensorflow;
+using Tensorflow.NumPy;
 using Tensorflow.Summaries;
 using static Microsoft.ML.Data.TextLoader;
 using static Microsoft.ML.TensorFlow.TensorFlowUtils;
@@ -976,8 +977,8 @@ namespace Microsoft.ML.Vision
                 metrics.Train = new TrainMetrics();
                 float accuracy = 0;
                 float crossentropy = 0;
-                var labelTensorShape = _labelTensor.TensorShape.dims.Select(x => (long)x).ToArray();
-                var featureTensorShape = _bottleneckInput.TensorShape.dims.Select(x => (long)x).ToArray();
+                var labelTensorShape = _labelTensor.shape.dims;
+                var featureTensorShape = _bottleneckInput.shape.dims;
                 byte[] buffer = new byte[sizeof(int)];
                 trainSetFeatureReader.ReadExactly(buffer, 0, 4);
                 int trainingExamples = BitConverter.ToInt32(buffer, 0);
@@ -1119,16 +1120,45 @@ namespace Microsoft.ML.Vision
                 {
                     // Add learning rate as a placeholder only when learning rate scheduling is used.
                     metrics.Train.LearningRate = learningRateScheduler.GetLearningRate(trainState);
-                    runner.AddInput(new Tensor(metrics.Train.LearningRate, TF_DataType.TF_FLOAT), 2);
+                    runner.AddInput(new Tensor(metrics.Train.LearningRate), 2);
                 }
 
-                var outputTensors = runner.AddInput(new Tensor(featureBufferPtr, featureTensorShape, TF_DataType.TF_FLOAT, featuresFileBytesRead), 0)
-                                    .AddInput(new Tensor(labelBufferPtr, labelTensorShape, TF_DataType.TF_INT64, labelFileBytesRead), 1)
-                                    .Run();
+                //var outputTensors = runner.AddInput(new Tensor(featureBufferPtr, featureTensorShape, TF_DataType.TF_FLOAT, featuresFileBytesRead), 0)
+                //                    .AddInput(new Tensor(labelBufferPtr, labelTensorShape, TF_DataType.TF_INT64, labelFileBytesRead), 1)
+                //                    .Run();
+
+                // Compute element counts from the bytes read
+                var featureElemCount = featuresFileBytesRead / sizeof(float);
+                var labelElemCount = labelFileBytesRead / sizeof(long);
+
+                // Materialize typed managed arrays from your byte buffers
+                var featureFloats = new float[featureElemCount];
+                System.Buffer.BlockCopy(featuresBufferBytes, 0, featureFloats, 0, featuresFileBytesRead);
+
+                var labelLongs = new long[labelElemCount];
+                System.Buffer.BlockCopy(labelBufferBytes, 0, labelLongs, 0, labelFileBytesRead);
+
+                // Wrap as NDArray with the right shapes
+                NDArray featureNd = np.array(featureFloats).reshape(featureTensorShape);
+                NDArray labelNd = np.array(labelLongs).reshape(labelTensorShape);
+
+                // Construct TF tensors from NDArray
+                var featureTensor = new Tensor(featureNd);     // dtype float32
+                var labelTensor = new Tensor(labelNd);       // dtype int64
+
+                // Feed them
+                var outputTensors = runner
+                    .AddInput(featureTensor, 0)
+                    .AddInput(labelTensor, 1)
+                    .Run();
 
                 metrics.Train.BatchProcessedCount += 1;
                 metricsAggregator(outputTensors, metrics);
                 trainState.CurrentBatchIndex += 1;
+
+                // Dispose outputs if needed in your pipeline
+                //foreach (var t in outputTensors)
+                //    t?.Dispose();
             }
         }
 
@@ -1186,7 +1216,7 @@ namespace Microsoft.ML.Vision
             {
                 tf_with(tf.name_scope("correct_prediction"), delegate
                 {
-                    _prediction = tf.argmax(resultTensor, 1);
+                    _prediction = tf.arg_max(resultTensor, 1);
                     correctPrediction = tf.equal(_prediction, groundTruthTensor);
                 });
 
@@ -1240,7 +1270,7 @@ namespace Microsoft.ML.Vision
             string scoreColumnName, Tensor bottleneckTensor, bool isTraining, bool useLearningRateScheduler,
             float learningRate)
         {
-            var bottleneckTensorDims = bottleneckTensor.TensorShape.dims;
+            var bottleneckTensorDims = bottleneckTensor.shape.as_int_list();
             var (batch_size, bottleneck_tensor_size) = (bottleneckTensorDims[0], bottleneckTensorDims[1]);
             tf_with(tf.name_scope("input"), scope =>
             {
@@ -1254,7 +1284,7 @@ namespace Microsoft.ML.Vision
                         _learningRateInput = tf.placeholder(tf.float32, null, name: "learningRateInputPlaceholder");
 
                 }
-                _labelTensor = tf.placeholder(tf.int64, new TensorShape(batch_size), name: labelColumn);
+                _labelTensor = tf.placeholder(tf.int64, new Shape(batch_size), name: labelColumn);
             });
 
             string layerName = "final_retrain_ops";
@@ -1274,7 +1304,7 @@ namespace Microsoft.ML.Vision
                 ResourceVariable layerBiases = null;
                 tf_with(tf.name_scope("biases"), delegate
                 {
-                    TensorShape shape = new TensorShape(classCount);
+                    Shape shape = new Shape(classCount);
                     layerBiases = tf.Variable(tf.zeros(shape), name: "final_biases");
                     VariableSummaries(layerBiases);
                 });
@@ -1514,7 +1544,8 @@ namespace Microsoft.ML.Vision
 
             if (_session != null && _session != IntPtr.Zero)
             {
-                _session.close();
+                //_session.close();
+                _session.Dispose();
             }
 
             _isDisposed = true;

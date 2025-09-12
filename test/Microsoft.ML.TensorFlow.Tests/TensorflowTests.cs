@@ -2055,7 +2055,7 @@ namespace Microsoft.ML.TensorFlow.Scenarios
                 new TextLoader.Column("name", DataKind.String, 1)
             });
 
-            Tensorflow.TensorShape[] tfInputShape;
+            Tensorflow.Shape[] tfInputShape;
 
             using (var tfModel = _mlContext.Model.LoadTensorFlowModel(modelLocation))
             {
@@ -2069,9 +2069,11 @@ namespace Microsoft.ML.TensorFlow.Scenarios
                 tfInputShape = transformer.LastTransformer.TFInputShapes;
                 transformer.Dispose();
             }
-
-            Assert.Equal(imageHeight, tfInputShape.ElementAt(0)[1].dims[0]);
-            Assert.Equal(imageWidth, tfInputShape.ElementAt(0)[2].dims[0]);
+            //var n = tfInputShape.ElementAt(0);
+            //Assert.Equal(imageHeight, tfInputShape.ElementAt(0)[1].dims[0]);
+            //Assert.Equal(imageWidth, tfInputShape.ElementAt(0)[2].dims[0]);
+            Assert.Equal(imageHeight, tfInputShape.ElementAt(0)[1]); //or is it supposed to be .ElementAt(0).dims[1] ?
+            Assert.Equal(imageWidth, tfInputShape.ElementAt(0)[2]);
         }
     }
 }

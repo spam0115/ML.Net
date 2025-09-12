@@ -16,7 +16,25 @@ build.cmd -configuration Debug -projects ".\src\Microsoft.ML.TensorFlow\Microsof
 
 
 
-
+C:\s\test\12-RED-1-2-1800x1800.jpg: NsfwSpy failed.  System.EntryPointNotFoundException: Unable to find an entry point named 'TF_StringEncodedSize' in DLL 'tensorflow'.
+   at Tensorflow.c_api.TF_StringEncodedSize(UInt64 len)
+   at Microsoft.ML.Vision.ImageClassificationTrainer.EncodeByteAsString(VBuffer`1 buffer) in C:\s\ML.Net\src\Microsoft.ML.Vision\ImageClassificationTrainer.cs:line 768
+   at Microsoft.ML.Vision.ImageClassificationTrainer.ImageProcessor.ProcessImage(VBuffer`1& imageBuffer) in C:\s\ML.Net\src\Microsoft.ML.Vision\ImageClassificationTrainer.cs:line 798
+   at Microsoft.ML.Vision.ImageClassificationModelParameters.Classifier.Score(VBuffer`1& image, Span`1 classProbabilities) in C:\s\ML.Net\src\Microsoft.ML.Vision\ImageClassificationTrainer.cs:line 1508
+   at Microsoft.ML.Vision.ImageClassificationModelParameters.<>c__DisplayClass22_0`2.<Microsoft.ML.Data.IValueMapper.GetMapper>b__0(VBuffer`1& src, VBuffer`1& dst) in C:\s\ML.Net\src\Microsoft.ML.Vision\ImageClassificationTrainer.cs:line 1528
+   at Microsoft.ML.Data.SchemaBindablePredictorWrapperBase.<>c__DisplayClass19_0`2.<GetValueGetter>b__0(TDst& dst) in C:\s\ML.Net\src\Microsoft.ML.Data\Scorers\SchemaBindablePredictorWrapper.cs:line 178
+   at Microsoft.ML.Data.PredictedLabelScorerBase.EnsureCachedPosition[TScore](Int64& cachedPosition, TScore& score, DataViewRow boundRow, ValueGetter`1 scoreGetter) in C:\s\ML.Net\src\Microsoft.ML.Data\Scorers\PredictedLabelScorerBase.cs:line 443
+   at Microsoft.ML.Data.MulticlassClassificationScorer.<>c__DisplayClass16_0.<GetPredictedLabelGetter>b__0(UInt32& dst) in C:\s\ML.Net\src\Microsoft.ML.Data\Scorers\MulticlassClassificationScorer.cs:line 577
+   at Microsoft.ML.Transforms.KeyToValueMappingTransformer.Mapper.KeyToValueMap`2.<>c__DisplayClass8_0.<GetMappingGetter>b__0(TValue& dst) in C:\s\ML.Net\src\Microsoft.ML.Data\Transforms\KeyToValue.cs:line 374
+   at Microsoft.ML.Data.TypedCursorable`1.TypedRowBase.<>c__DisplayClass9_0`2.<CreateConvertingActionSetter>b__0(TRow row) in C:\s\ML.Net\src\Microsoft.ML.Data\DataView\TypedCursor.cs:line 492
+   at Microsoft.ML.Data.TypedCursorable`1.TypedRowBase.FillValues(TRow row) in C:\s\ML.Net\src\Microsoft.ML.Data\DataView\TypedCursor.cs:line 532
+   at Microsoft.ML.Data.TypedCursorable`1.RowImplementation.FillValues(TRow row) in C:\s\ML.Net\src\Microsoft.ML.Data\DataView\TypedCursor.cs:line 578
+   at Microsoft.ML.PredictionEngineBase`2.FillValues(TDst prediction) in C:\s\ML.Net\src\Microsoft.ML.Data\Prediction\PredictionEngine.cs:line 168
+   at Microsoft.ML.PredictionEngine`2.Predict(TSrc example, TDst& prediction) in C:\s\ML.Net\src\Microsoft.ML.Data\Prediction\PredictionEngine.cs:line 80
+   at Microsoft.ML.PredictionEngineBase`2.Predict(TSrc example) in C:\s\ML.Net\src\Microsoft.ML.Data\Prediction\PredictionEngine.cs:line 160
+   at NsfwSpyNS.NsfwSpy.ClassifyImage(Byte[] imageData) in C:\s\NsfwRater\ngdph_NsfwSpy\NsfwSpy.NET\NsfwSpy\NsfwSpy.cs:line 76
+   at NsfwSpyNS.NsfwSpy.ClassifyImage(String filePath) in C:\s\NsfwRater\ngdph_NsfwSpy\NsfwSpy.NET\NsfwSpy\NsfwSpy.cs:line 88
+   at NsfwRater.RatingProcessor.RateFile(String fileName) in C:\s\NsfwRater\NsfwRater\RatingProcessor.cs:line 608
 
 
 
