@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Microsoft.ML;
@@ -762,25 +763,73 @@ namespace Microsoft.ML.Vision
             return (jpegData, resizedImage);
         }
 
+        //TF_StringEncodedSize is no longer in tensorflow after v 2.3.1
+        //private static Tensor EncodeByteAsString(VBuffer<byte> buffer)
+        //{
+        //    int length = buffer.Length;
+        //    var size = c_api.TF_StringEncodedSize((ulong)length);
+        //    var handle = c_api.TF_AllocateTensor(TF_DataType.TF_STRING, Array.Empty<long>(), 0, ((ulong)size + 8));
+
+        //    IntPtr tensor = c_api.TF_TensorData(handle);
+        //    Marshal.WriteInt64(tensor, 0);
+
+        //    var status = new Status();
+        //    unsafe
+        //    {
+        //        fixed (byte* src = buffer.GetValues())
+        //            c_api.TF_StringEncode(src, (ulong)length, (byte*)(tensor + sizeof(Int64)), size, status.Handle);
+        //    }
+
+        //    status.Check(true);
+        //    status.Dispose();
+        //    return new Tensor(handle);
+        //}
+
+        /* doesn't work.  I don't think the data structure it presumes is correct
         private static Tensor EncodeByteAsString(VBuffer<byte> buffer)
         {
-            int length = buffer.Length;
-            var size = c_api.TF_StringEncodedSize((ulong)length);
-            var handle = c_api.TF_AllocateTensor(TF_DataType.TF_STRING, Array.Empty<long>(), 0, ((ulong)size + 8));
+            // Convert VBuffer<byte> to byte array
+            byte[] bytes = new byte[buffer.Length];
+            buffer.CopyTo(bytes);
 
-            IntPtr tensor = c_api.TF_TensorData(handle);
-            Marshal.WriteInt64(tensor, 0);
+            // Create a tensor with the proper string encoding format
+            // Format: [8-byte offset][8-byte length][raw bytes]
+            byte[] tensorBytes = new byte[16 + bytes.Length];
 
-            var status = new Status();
-            unsafe
-            {
-                fixed (byte* src = buffer.GetValues())
-                    c_api.TF_StringEncode(src, (ulong)length, (byte*)(tensor + sizeof(Int64)), size, status.Handle);
-            }
+            // Write offset (8 bytes) - points to the start of string data
+            BitConverter.GetBytes(8L).CopyTo(tensorBytes, 0);
 
-            status.Check(true);
-            status.Dispose();
-            return new Tensor(handle);
+            // Write string length (8 bytes)
+            BitConverter.GetBytes((long)bytes.Length).CopyTo(tensorBytes, 8);
+
+            // Copy raw bytes
+            bytes.CopyTo(tensorBytes, 16);
+
+            // Create tensor using the (byte[] bytes, Shape shape, TF_DataType dtype) constructor
+            return new Tensor(
+                tensorBytes,
+                new Shape(new long[0]),  // Scalar tensor
+                TF_DataType.TF_STRING
+            );
+        }
+        */
+
+        private static Tensor EncodeByteAsString(VBuffer<byte> buffer)
+        {
+            // Convert VBuffer<byte> to byte array
+            byte[] bytes = new byte[buffer.Length];
+            buffer.CopyTo(bytes);
+
+            //var tensor = tf.constant(bytes, TF_DataType.TF_STRING);
+
+            //try this next if the above doesn't work
+            var tensor = new Tensor(
+                bytes,
+                new Shape(new long[0]),  // Scalar tensor
+                TF_DataType.TF_STRING
+            );
+
+            return tensor;
         }
 
         internal sealed class ImageProcessor

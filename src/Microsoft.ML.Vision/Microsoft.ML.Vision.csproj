@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TfStringHelpers.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Microsoft.ML.Core\Microsoft.ML.Core.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Microsoft.ML.Data\Microsoft.ML.Data.csproj" PrivateAssets="all" />
     <ProjectReference Include="..\Microsoft.ML.StandardTrainers\Microsoft.ML.StandardTrainers.csproj" PrivateAssets="all" />
