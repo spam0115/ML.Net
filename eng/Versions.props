@@ -69,7 +69,8 @@
     <SharpZipLibVersion>1.4.2</SharpZipLibVersion>
     <TensorflowDotNETVersion>0.70.2</TensorflowDotNETVersion>
     <TensorFlowMajorVersion>2</TensorFlowMajorVersion>
-    <TensorFlowVersion>2.3.1</TensorFlowVersion>
+    <TensorFlowVersion>2.7.0</TensorFlowVersion><!--2.3.1, 2.7.0, 2.10.3  -->
+    <TensorFlowVersionGPU>2.7.0</TensorFlowVersionGPU><!--2.3.1, 2.7.0 -->
     <TorchSharpPyBridgeVersion>1.4.1</TorchSharpPyBridgeVersion>
     <AutoGenVersion>0.2.3</AutoGenVersion>
     <SemanticKernelVersion>1.48.0</SemanticKernelVersion>

@@ -4,7 +4,10 @@ cd C:\Users\wongz4\s\mlnet2\
 
 cd C:\s\ML.Net\
 
-build.cmd -configuration Debug /p:TargetArchitecture=x64;TargetFramework=net9.0;
+build.cmd -clean --clean
+
+build.cmd -configuration Debug /p:TargetArchitecture=x64
+;TargetFramework=net9.0;
 
 build.cmd -configuration Debug -projects ".\src\Microsoft.ML.TensorFlow\Microsoft.ML.TensorFlow.csproj" /p:TargetArchitecture=x64;TargetFramework=net9.0;
 
