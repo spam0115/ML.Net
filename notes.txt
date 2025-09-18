@@ -4,7 +4,7 @@ cd C:\Users\wongz4\s\mlnet2\
 
 cd C:\s\ML.Net\
 
-build.cmd -clean --clean
+build.cmd -clean
 
 build.cmd -configuration Debug /p:TargetArchitecture=x64
 ;TargetFramework=net9.0;
@@ -79,6 +79,14 @@ C:\temp3\test\1659332332205223.gif: NsfwSpy failed.  System.EntryPointNotFoundEx
    at NsfwSpyNS.NsfwSpy.ClassifyImage(Byte[] imageData) in C:\s\NsfwRater\ngdph_NsfwSpy\NsfwSpy.NET\NsfwSpy\NsfwSpy.cs:line 76
    at NsfwSpyNS.NsfwSpy.ClassifyImage(String filePath) in C:\s\NsfwRater\ngdph_NsfwSpy\NsfwSpy.NET\NsfwSpy\NsfwSpy.cs:line 88
    at NsfwRater.RatingProcessor.RateFile(String fileName) in C:\s\NsfwRater\NsfwRater\RatingProcessor.cs:line 608
+
+
+Specifying the Language version in the keras project prevented package restore from working.  Delete it and package restore will work.  The project will then complain about new language features being used.  Put the languageversion entry back in and the project will still work now that the packages have already been downloaded.
+
+tensorflow.net uses an older language than ml.net.  Must add a ton of warning suppressions to the project.
+
+
+
 
 
 

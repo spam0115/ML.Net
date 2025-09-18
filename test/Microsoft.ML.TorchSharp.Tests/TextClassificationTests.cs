@@ -406,7 +406,8 @@ namespace Microsoft.ML.TorchSharp.Tests
             transformer.Dispose();
         }
 
-        [Fact(Skip = "Needs to be on a comp with GPU or will take a LONG time.")]
+        //[Fact(Skip = "Needs to be on a comp with GPU or will take a LONG time.")]
+        [Fact]
         public void TestSentenceSimilarityLargeFileGpu()
         {
             ML.GpuDeviceId = 0;

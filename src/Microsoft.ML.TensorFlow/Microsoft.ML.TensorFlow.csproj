@@ -6,6 +6,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <IsPackable>true</IsPackable>
     <PackageDescription>Microsoft.ML.TensorFlow contains ML.NET integration of TensorFlow.</PackageDescription>
+    <SignAssembly>True</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,10 +16,10 @@
 
   <ItemGroup>
     <PackageReference Include="System.IO.FileSystem.AccessControl" />
-    <PackageReference Include="TensorFlow.NET" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\TensorFlow.Net\src\TensorFlowNET.Core\Tensorflow.Binding.csproj" />
     <ProjectReference Include="..\Microsoft.ML\Microsoft.ML.csproj" />
 
     <ProjectReference Include="..\Microsoft.ML.Core\Microsoft.ML.Core.csproj" PrivateAssets="all" />
