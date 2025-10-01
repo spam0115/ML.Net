@@ -11,6 +11,7 @@
   <Import Project="../Cert.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\TensorFlow.Net\src\TensorFlowNET.Core\Tensorflow.Binding.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.ML.TensorFlow\Microsoft.ML.TensorFlow.csproj" />
     <ProjectReference Include="..\Microsoft.ML.TestFramework\Microsoft.ML.TestFramework.csproj" />
     <ProjectReference Include="..\Microsoft.ML.Tests\Microsoft.ML.Tests.csproj" />
